@@ -1,0 +1,5 @@
+Eval:
+    gt_path: "data/TestDataset"
+    pred_path: "results/UNet++"
+    result_path: "EvaluateResults"
+    datasets: ['CVC-300', 'CVC-ClinicDB', 'Kvasir', 'CVC-ColonDB', 'ETIS-LaribPolypDB']
