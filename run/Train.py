@@ -24,8 +24,8 @@ def _args():
 def train(opt):
     model = eval(opt.Model.name)(opt.Model).cuda()
     
-    image_root = os.path.join(opt.Train.train_path, 'image')
-    gt_root = '{}/mask/'.format(opt.Train.train_path)
+    image_root = os.path.join(opt.Train.train_path, 'images')
+    gt_root = os.path.join(opt.Train.train_path, 'masks')
 
     train_dataset = PolypDataset(image_root, gt_root, opt.Train)
     train_loader = data.DataLoader(dataset=train_dataset,
