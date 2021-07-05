@@ -13,7 +13,42 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
 ## 2. Prepare datasets
   + Download dataset from following [URL](https://drive.google.com/file/d/17Cs2JhKOKwt4usiAYJVJMnXfyZWySn3s/view?usp=sharing)
   + Move folder `data` to the repository.
-  
+  + Folder should be ordered as follows,
+```
+|-- configs
+|-- data
+|   |-- TestDataset
+|   |   |-- CVC-300
+|   |   |   |-- images
+|   |   |   `-- masks
+|   |   |-- CVC-ClinicDB
+|   |   |   |-- images
+|   |   |   `-- masks
+|   |   |-- CVC-ColonDB
+|   |   |   |-- images
+|   |   |   `-- masks
+|   |   |-- ETIS-LaribPolypDB
+|   |   |   |-- images
+|   |   |   `-- masks
+|   |   `-- Kvasir
+|   |       |-- images
+|   |       `-- masks
+|   `-- TrainDataset
+|       |-- images
+|       `-- masks
+|-- EvaluateResults
+|-- lib
+|   |-- backbones
+|   |-- losses
+|   `-- modules
+|-- results
+|-- run
+|-- snapshots
+|   |-- UACANet-L
+|   `-- UACANet-S
+`-- utils
+```
+
 ## 3. Train & Evaluate
   + You can train with `python run/Train.py --config configs/UACANet-L.yaml`
   + You can generate prediction for test dataset with `python run/Test.py --config configs/UACANet-L.yaml`
