@@ -81,8 +81,7 @@ def test(opt):
             out = (out - out.min()) / (out.max() - out.min() + 1e-8)
             # out = cv2.resize(out, original_size)
 
-            # Image.fromarray(((out > 0.5) * 255).astype(np.uint8)).save(os.path.join(save_path, name[0]))
-            Image.fromarray((out * 255).astype(np.uint8)).save(os.path.join(save_path, name[0]))
+            Image.fromarray(((out > 0.5) * 255).astype(np.uint8)).save(os.path.join(save_path, name[0]))
 
     print('#' * 20, 'Test done', '#' * 20)
 
