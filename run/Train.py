@@ -48,23 +48,19 @@ def train(opt):
         pbar = tqdm.tqdm(enumerate(train_loader, start=1), desc='Iter', total=len(train_loader), position=1, leave=False, bar_format='{desc:<5.5}{percentage:3.0f}%|{bar:40}{r_bar}')
         for i, sample in pbar:
             optimizer.zero_grad()
-            # ---- data prepare ----
             images, gts = sample['image'], sample['gt']
-            images = Variable(images).cuda()
-            gts = Variable(gts).cuda()
-            # ---- forward ----
+            images = images.cuda()
+            gts = gts.cuda()
             out = model(images, gts)
-            # ---- backward ----
             out['loss'].backward()
             clip_gradient(optimizer, opt.Train.clip)
             optimizer.step()
             scheduler.step()
             pbar.set_postfix({'loss': out['loss'].item()})
 
-        save_path = '{}/'.format(opt.Train.train_save)
-        os.makedirs(save_path, exist_ok=True)
+        os.makedirs(opt.Train.train_save, exist_ok=True)
         if epoch % opt.Train.checkpoint_epoch == 0:
-            torch.save(model.state_dict(), save_path + 'latest.pth')
+            torch.save(model.state_dict(), os.path.join(opt.Train.train_save, 'latest.pth'))
 
     print('#' * 20, 'Train done', '#' * 20)
 
@@ -72,9 +68,3 @@ if __name__ == '__main__':
     args = _args()
     opt = ed(yaml.load(open(args.config), yaml.FullLoader))
     train(opt)
-
-    # ---- flops and params ----
-    # from utils.utils import CalParams
-    # x = torch.randn(1, 3, 352, 352).cuda()
-    # CalParams(lib, x)
-    # model = eval(opt.Model.name)(opt.Model).cuda()
