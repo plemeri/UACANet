@@ -49,9 +49,12 @@ def test(opt):
         for i, sample in tqdm.tqdm(enumerate(test_loader), desc=dataset + ' - Test', total=len(test_loader), position=1, leave=False, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}'):
             image = sample['image']
             name = sample['name']
+            original_size = sample['original_size']
+
             image = image.cuda()
             out = model(image)['pred']
-
+            
+            out = F.interpolate(out, original_size, mode='bilinear', align_corners=True)
             out = out.data.sigmoid().cpu().numpy().squeeze()
             out = (out - out.min()) / (out.max() - out.min() + 1e-8)
             Image.fromarray(((out > 0.5) * 255).astype(np.uint8)).save(os.path.join(save_path, name[0]))
