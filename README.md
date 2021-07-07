@@ -69,3 +69,40 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
   
   + (optional) Download our best result checkpoint from following [URL](https://drive.google.com/file/d/1C5ag5X_gKR1IHW6fVAHdMggu7ilU1XbC/view?usp=sharing) for UACANet-L and UACANet-S.
 
+## 4. Experimental Results
+  + UACANet-S
+  ```
+  dataset              meanDic    meanIoU    wFm     Sm    meanEm    mae    maxEm    maxDic    maxIoU    meanSen    maxSen    meanSpe    maxSpe
+-----------------  ---------  ---------  -----  -----  --------  -----  -------  --------  --------  ---------  --------  ---------  --------
+CVC-300                0.902      0.837  0.886  0.934     0.974  0.006    0.976     0.906     0.840      0.959     1.000      0.992     0.995
+CVC-ClinicDB           0.916      0.870  0.917  0.940     0.965  0.008    0.968     0.919     0.873      0.942     1.000      0.991     0.995
+Kvasir                 0.905      0.852  0.897  0.914     0.948  0.026    0.951     0.908     0.855      0.911     1.000      0.976     0.979
+CVC-ColonDB            0.783      0.704  0.772  0.848     0.894  0.034    0.897     0.786     0.706      0.801     1.000      0.958     0.962
+ETIS-LaribPolypDB      0.694      0.615  0.650  0.815     0.848  0.023    0.851     0.696     0.618      0.833     1.000      0.887     0.891
+  ```
+  + UACANet-L
+  ```
+  dataset              meanDic    meanIoU    wFm     Sm    meanEm    mae    maxEm    maxDic    maxIoU    meanSen    maxSen    meanSpe    maxSpe
+-----------------  ---------  ---------  -----  -----  --------  -----  -------  --------  --------  ---------  --------  ---------  --------
+CVC-300                0.910      0.849  0.901  0.937     0.977  0.005    0.980     0.913     0.853      0.940     1.000      0.993     0.997
+CVC-ClinicDB           0.926      0.880  0.928  0.943     0.974  0.006    0.976     0.929     0.883      0.943     1.000      0.992     0.996
+Kvasir                 0.912      0.859  0.902  0.917     0.955  0.025    0.958     0.915     0.862      0.923     1.000      0.983     0.987
+CVC-ColonDB            0.751      0.678  0.746  0.835     0.875  0.039    0.878     0.753     0.680      0.754     1.000      0.953     0.957
+ETIS-LaribPolypDB      0.766      0.689  0.740  0.859     0.903  0.012    0.905     0.769     0.691      0.813     1.000      0.932     0.936
+  ```
+  
+## 5. Citation
+```
+@misc{kim2021uacanet,
+    title={UACANet: Uncertainty Augmented Context Attention for Polyp Semgnetaion},
+    author={Taehun Kim and Hyemin Lee and Daijin Kim},
+    year={2021},
+    eprint={2107.02368},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
+```
+  + Conference version will be added soon.
+
+## 6. Acknowledgement
+ + Basic training strategy, datasets and evaluation methods are brought from [PraNet](https://github.com/DengPingFan/PraNet). Especially for the evalutation, we made Python version based on PraNet's MatLab version and verified on various samples. Thanks for the great work!
