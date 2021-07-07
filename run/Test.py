@@ -50,6 +50,7 @@ def test(opt):
             image = sample['image']
             name = sample['name']
             image = image.cuda()
+            out = model(image)['pred']
 
             out = out.data.sigmoid().cpu().numpy().squeeze()
             out = (out - out.min()) / (out.max() - out.min() + 1e-8)
