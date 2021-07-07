@@ -1,4 +1,4 @@
-# UACANet
+# UACANet: Uncertainty Aware Context Attention for Polyp Segmentation
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/uacanet-uncertainty-augmented-context/medical-image-segmentation-on-cvc-colondb)](https://paperswithcode.com/sota/medical-image-segmentation-on-cvc-colondb?p=uacanet-uncertainty-augmented-context)
 
