@@ -11,7 +11,7 @@
 Official pytorch implementation of [UACANet: Uncertainty Aware Context Attention for Polyp Segmentation](https://arxiv.org/abs/2107.02368)  
 To appear in the Proceedings of the 29th ACM International Conference on Multimedia (ACM MM '21)
 
-![Teaser](./figure.jpg)
+![Teaser](./figures/figure.jpg)
 
 ## Abstract
 
@@ -93,7 +93,7 @@ ETIS-LaribPolypDB      0.766      0.689  0.740  0.859     0.903  0.012    0.905 
   + Qualitative Results 
 
 
-![results](./results.jpg)
+![results](./figures/results.jpg)
   
 ## 5. Citation
 ```
