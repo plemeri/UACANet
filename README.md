@@ -95,11 +95,12 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
 ```
 
 ## 3. Train & Evaluate
-  + You can train with `CUDA_VISIBLE_DEVICES=0 python run/Train.py --config configs/UACANet-L.yaml --verbose`
-  + (21.10.08 added) You can also train your model with multiple GPUs. `CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node 2 --master_port=$RANDOM run/Train.py --config configs/UACANet-L.yaml --verbose`
-  + You can generate prediction for test dataset with `python run/Test.py --config configs/UACANet-L.yaml`
-  + You can evaluate generated prediction with `python run/Eval.py --config configs/UACANet-L.yaml`
-  + You can also use `python Expr.py --config configs/UACANet-L.yaml` to train, generate prediction and evaluation in single command
+  + You can train with `CUDA_VISIBLE_DEVICES=0 python run/Train.py --config configs/UACANet-L.yaml --verbose --debug`
+  + (21.10.08 added) You can also train your model with multiple GPUs. `CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node 2 --master_port=$RANDOM run/Train.py --config configs/UACANet-L.yaml --verbose --debug`
+  + You can generate prediction for test dataset with `python run/Test.py --config configs/UACANet-L.yaml --verbose`
+  + You can evaluate generated prediction with `python run/Eval.py --config configs/UACANet-L.yaml --verbose`
+  + You can also use `CUDA_VISIBLE_DEVICES=0 python Expr.py --config configs/UACANet-L.yaml --verbose --debug` to train, generate prediction and evaluation in single command
+  + (21.10.08 added) You can also use `python Exprs.py --config configs/UACANet-L.yaml --exprs 8 --devices 0,1 --verbose --debug` to train, generate prediction and evaluation for multiple times for single configuration in single command. Note that it works on tmux environment only, so use this on tmux console.
   
   + (optional) Download our best result checkpoint and pre-computed maps from following [URL](https://drive.google.com/file/d/1C5ag5X_gKR1IHW6fVAHdMggu7ilU1XbC/view?usp=sharing) for UACANet-L and UACANet-S.
 
