@@ -24,7 +24,7 @@ def clip_gradient(optimizer, grad_clip):
         for param in group['params']:
             if param.grad is not None:
                 param.grad.data.clamp_(-grad_clip, grad_clip)
-                
+
 def debug_tile(out, size=(100, 100)):
     debugs = []
     for debs in out['debug']:
@@ -37,6 +37,6 @@ def debug_tile(out, size=(100, 100)):
             log = cv2.cvtColor(log, cv2.COLOR_GRAY2RGB)
             log = cv2.resize(log, size)
             debug.append(log)
-            debugs.append(np.vstack(debug))
+        debugs.append(np.vstack(debug))
+    return np.hstack(debugs)
 
-    np.hstack(debugs)
