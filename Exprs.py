@@ -7,7 +7,7 @@ import string
 
 def _args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='configs/InSPyReNet_SwinB.yaml')
+    parser.add_argument('--config', type=str, default='configs/UACANet-L.yaml')
     parser.add_argument('--devices', type=str, default='0')
     parser.add_argument('--exprs', type=int, default=4)
     parser.add_argument('--verbose', action='store_true', default=False)
@@ -37,7 +37,7 @@ if __name__ == "__main__":
         exp_tab.append((cfg_name, devices[i % len(devices)]))
 
     for device in devices:
-        command = 'tmux new-window \"source ~/.zshrc && conda activate inspyrenet ' 
+        command = 'tmux new-window \"source ~/.zshrc && conda activate uacanet ' 
         for exp in exp_tab:
             if exp[1] == device:
                 command += '&& CUDA_VISIBLE_DEVICES={} python Expr.py --config {} '.format(device, os.path.join('temp', exp[0] + '.yaml'))

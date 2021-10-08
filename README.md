@@ -17,6 +17,9 @@ To appear in the Proceedings of the 29th ACM International Conference on Multime
 
 We propose Uncertainty Augmented Context Attention network (UACANet) for polyp segmentation which consider a uncertain area of the saliency map. We construct a modified version of U-Net shape network with additional encoder and decoder and compute a saliency map in each bottom-up stream prediction module and propagate to the next prediction module. In each prediction module, previously predicted saliency map is utilized to compute foreground, background and uncertain area map and we aggregate the feature map with three area maps for each representation. Then we compute the relation between each representation and each pixel in the feature map. We conduct experiments on five popular polyp segmentation benchmarks, Kvasir, CVC-ClinicDB, ETIS, CVC-ColonDB and CVC-300, and achieve state-of-the-art performance. Especially, we achieve 76.6% mean Dice on ETIS dataset which is 13.8% improvement compared to the previous state-of-the-art method.
 
+## 0. Automatic Installation
+  + (21.10.08 added) by simply using `install.sh`, you can download and locate train/test datasets, backbone checkpoints, pretrained checkpoints and pre-computed results, and automatically create conda environment named `uacanet`. If you find error using our script, please create environment and prepare datasets manually.  
+
 ## 1. Create environment
   + Create conda environment with following command `conda create -n uacanet python=3.7`
   + Activate environment with following command `conda activate uacanet`
@@ -53,12 +56,42 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
 |   |-- backbones
 |   |-- losses
 |   `-- modules
-|-- results
-|-- run
-|-- snapshots
-|   |-- UACANet-L
-|   `-- UACANet-S
-`-- utils
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── results
+│   ├── result_CVC-300.csv
+│   ├── result_CVC-ClinicDB.csv
+│   ├── result_CVC-ColonDB.csv
+│   ├── result_ETIS-LaribPolypDB.csv
+│   └── result_Kvasir.csv
+├── run
+│   ├── __init__.py
+│   ├── Eval.py
+│   ├── Inference.py
+│   ├── Test.py
+│   └── Train.py
+├── snapshots
+│   ├── UACANet-L
+│   │   ├── CVC-300
+│   │   ├── CVC-ClinicDB
+│   │   ├── CVC-ColonDB
+│   │   ├── ETIS-LaribPolypDB
+│   │   ├── Kvasir
+│   │   └── latest.pth
+│   └── UACANet-S
+│       ├── CVC-300
+│       ├── CVC-ClinicDB
+│       ├── CVC-ColonDB
+│       ├── ETIS-LaribPolypDB
+│       ├── Kvasir
+│       └── latest.pth
+└── utils
+    ├── custom_transforms.py
+    ├── dataloader.py
+    ├── eval_functions.py
+    ├── __pycache__
+    └── utils.py
 ```
 
 ## 3. Train & Evaluate
@@ -67,7 +100,7 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
   + You can evaluate generated prediction with `python run/Eval.py --config configs/UACANet-L.yaml`
   + You can also use `python Expr.py --config configs/UACANet-L.yaml` to train, generate prediction and evaluation in single command
   
-  + (optional) Download our best result checkpoint from following [URL](https://drive.google.com/file/d/1C5ag5X_gKR1IHW6fVAHdMggu7ilU1XbC/view?usp=sharing) for UACANet-L and UACANet-S.
+  + (optional) Download our best result checkpoint and pre-computed maps from following [URL](https://drive.google.com/file/d/1C5ag5X_gKR1IHW6fVAHdMggu7ilU1XbC/view?usp=sharing) for UACANet-L and UACANet-S.
 
 ## 4. Experimental Results
   + UACANet-S
