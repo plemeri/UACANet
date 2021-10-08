@@ -1,27 +1,31 @@
 import os
 import torch
 import argparse
-import yaml
 import tqdm
 import sys
 
 from torch.autograd import Variable
-from easydict import EasyDict as ed
 
 filepath = os.path.split(__file__)[0]
 repopath = os.path.split(filepath)[0]
 sys.path.append(repopath)
 
 from lib import *
+from lib.optim import *
 from utils.dataloader import *
 from utils.utils import *
 
 def _args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, default='configs/xomcnet.yaml')
+    parser.add_argument('--local_rank', type=int, default=-1)
+    parser.add_argument('--verbose', action='store_true', default=False)
+    parser.add_argument('--debug', action='store_true', default=False)
     return parser.parse_args()
 
-def train(opt):
+def train(opt, args):
+    device_ids = [0]
+    device_num = len(device_ids)
     model = eval(opt.Model.name)(opt.Model).cuda()
     
     image_root = os.path.join(opt.Train.train_path, 'images')
@@ -66,5 +70,5 @@ def train(opt):
 
 if __name__ == '__main__':
     args = _args()
-    opt = ed(yaml.load(open(args.config), yaml.FullLoader))
-    train(opt)
+    opt = load_config(args.config)
+    train(opt, args)
