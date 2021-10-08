@@ -52,6 +52,7 @@ def train(opt, args):
                                     drop_last=True)
 
     model = eval(opt.Model.name)(channels=opt.Model.channels,
+                                 output_stride=opt.Model.output_stride,
                                  pretrained=opt.Model.pretrained)
 
     if device_num > 1:

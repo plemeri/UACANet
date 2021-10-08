@@ -13,15 +13,15 @@ from .backbones.Res2Net_v1b import res2net50_v1b_26w_4s
 
 class PraNet(nn.Module):
     # res2net based encoder decoder
-    def __init__(self, opt):
+    def __init__(self, channels=256, output_stride=16, pretrained=True):
         super(PraNet, self).__init__()
-        self.resnet = res2net50_v1b_26w_4s(pretrained=opt.pretrained, output_stride=opt.output_stride)
+        self.resnet = res2net50_v1b_26w_4s(pretrained=pretrained, output_stride=output_stride)
 
-        self.context2 = RFB(512, opt.channel)
-        self.context3 = RFB(1024, opt.channel)
-        self.context4 = RFB(2048, opt.channel)
+        self.context2 = RFB(512, channels)
+        self.context3 = RFB(1024, channels)
+        self.context4 = RFB(2048, channels)
 
-        self.decoder = PPD(opt.channel)
+        self.decoder = PPD(channels)
 
         self.attention2 = reverse_attention(512, 64, 2, 3)
         self.attention3 = reverse_attention(1024, 64, 2, 3)
@@ -29,8 +29,15 @@ class PraNet(nn.Module):
 
         self.loss_fn = bce_iou_loss
 
-    def forward(self, x, y=None):
+    def forward(self, sample):
+        x = sample['image']
+        if 'gt' in sample.keys():
+            y = sample['gt']
+        else:
+            y = None
+            
         base_size = x.shape[-2:]
+        
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)

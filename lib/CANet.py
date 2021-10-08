@@ -13,27 +13,34 @@ from .backbones.Res2Net_v1b import res2net50_v1b_26w_4s
 
 class CANet(nn.Module):
     # res2net based encoder decoder
-    def __init__(self, opt):
+    def __init__(self, channels=256, output_stride=16, pretrained=True):
         super(CANet, self).__init__()
-        self.resnet = res2net50_v1b_26w_4s(pretrained=opt.pretrained, output_stride=opt.output_stride)
+        self.resnet = res2net50_v1b_26w_4s(pretrained=pretrained, output_stride=output_stride)
 
-        self.context2 = PAA_e(512, opt.channel)
-        self.context3 = PAA_e(1024, opt.channel)
-        self.context4 = PAA_e(2048, opt.channel)
+        self.context2 = PAA_e(512, channels)
+        self.context3 = PAA_e(1024, channels)
+        self.context4 = PAA_e(2048, channels)
 
-        self.decoder = PAA_d(opt.channel)
+        self.decoder = PAA_d(channels)
 
-        self.attention2 = CA(opt.channel * 2, opt.channel)
-        self.attention3 = CA(opt.channel * 2, opt.channel)
-        self.attention4 = CA(opt.channel * 2, opt.channel)
+        self.attention2 = CA(channels * 2, channels)
+        self.attention3 = CA(channels * 2, channels)
+        self.attention4 = CA(channels * 2, channels)
 
         self.loss_fn = bce_iou_loss
 
         self.ret = lambda x, target: F.interpolate(x, size=target.shape[-2:], mode='bilinear', align_corners=False)
         self.res = lambda x, size: F.interpolate(x, size=size, mode='bilinear', align_corners=False)
 
-    def forward(self, x, y=None):
+    def forward(self, sample):
+        x = sample['image']
+        if 'gt' in sample.keys():
+            y = sample['gt']
+        else:
+            y = None
+            
         base_size = x.shape[-2:]
+        
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)

@@ -18,24 +18,31 @@ from utils.utils import *
 def _args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, default='configs/UACANet-L.yaml')
+    parser.add_argument('--verbose', action='store_true', default=False)
     return parser.parse_args()
 
 def evaluate(opt, args):
     if os.path.isdir(opt.Eval.result_path) is False:
         os.makedirs(opt.Eval.result_path)
 
-    method = os.path.split(opt.Eval.pred_path)[-1]
+    method = os.path.split(opt.Eval.pred_root)[-1]
     Thresholds = np.linspace(1, 0, 256)
     headers = opt.Eval.metrics #['meanDic', 'meanIoU', 'wFm', 'Sm', 'meanEm', 'mae', 'maxEm', 'maxDic', 'maxIoU', 'meanSen', 'maxSen', 'meanSpe', 'maxSpe']
     results = []
+    
+    if args.verbose is True:
+        print('#' * 20, 'Start Evaluation', '#' * 20)
+        datasets = tqdm.tqdm(opt.Eval.datasets, desc='Expr - ' + method, total=len(
+            opt.Eval.datasets), position=0, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}')
+    else:
+        datasets = opt.Eval.datasets
 
-    print('#' * 20, 'Start Evaluation', '#' * 20)
-    for dataset in tqdm.tqdm(opt.Eval.datasets, desc='Expr - ' + method, total=len(opt.Eval.datasets), position=0, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}'):
-        pred_path = os.path.join(opt.Eval.pred_path, dataset)
-        gt_path = os.path.join(opt.Eval.gt_path, dataset, 'masks')
+    for dataset in datasets:
+        pred_root = os.path.join(opt.Eval.pred_root, dataset)
+        gt_root = os.path.join(opt.Eval.gt_root, dataset, 'masks')
 
-        preds = os.listdir(pred_path)
-        gts = os.listdir(gt_path)
+        preds = os.listdir(pred_root)
+        gts = os.listdir(gt_root)
 
         preds.sort()
         gts.sort()
@@ -53,13 +60,19 @@ def evaluate(opt, args):
         wFmeasure = np.zeros(len(preds))
         MAE = np.zeros(len(preds))
 
-        for i, sample in tqdm.tqdm(enumerate(zip(preds, gts)), desc=dataset + ' - Evaluation', total=len(preds), position=1, leave=False, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}'):
+        if args.verbose is True:
+            samples = tqdm.tqdm(enumerate(zip(preds, gts)), desc=dataset + ' - Evaluation', total=len(
+                preds), position=1, leave=False, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}')
+        else:
+            samples = enumerate(zip(preds, gts))
+
+        for i, sample in samples:
             pred, gt = sample
             assert os.path.splitext(pred)[0] == os.path.splitext(gt)[0]
 
-            pred_mask = np.array(Image.open(os.path.join(pred_path, pred)))
-            gt_mask = np.array(Image.open(os.path.join(gt_path, gt)))
-
+            pred_mask = np.array(Image.open(os.path.join(pred_root, pred)))
+            gt_mask = np.array(Image.open(os.path.join(gt_root, gt)))
+            
             if len(pred_mask.shape) != 2:
                 pred_mask = pred_mask[:, :, 0]
             if len(gt_mask.shape) != 2:

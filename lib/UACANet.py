@@ -13,9 +13,9 @@ from .backbones.Res2Net_v1b import res2net50_v1b_26w_4s
 
 class UACANet(nn.Module):
     # res2net based encoder decoder
-    def __init__(self, channels=256, pretrained=True):
+    def __init__(self, channels=256, output_stride=16, pretrained=True):
         super(UACANet, self).__init__()
-        self.resnet = res2net50_v1b_26w_4s(pretrained=pretrained, output_stride=16)
+        self.resnet = res2net50_v1b_26w_4s(pretrained=pretrained, output_stride=output_stride)
 
         self.context2 = PAA_e(512, channels)
         self.context3 = PAA_e(1024, channels)
