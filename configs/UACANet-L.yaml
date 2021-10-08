@@ -1,12 +1,11 @@
 Model:
     name: "UACANet"
-    channel: 256
-    output_stride: 16
+    channels: 256
     pretrained: True
 
 Train:
     Dataset:
-        type: "RGB_Dataset"
+        type: "PolypDataset"
         root: "data/TrainDataset"
         transform_list:
             resize: 
@@ -50,7 +49,7 @@ Train:
     
 Test:
     Dataset:
-        type: "RGB_Dataset"
+        type: "PolypDataset"
         root: "data/TestDataset"
         testsets: ['CVC-300', 'CVC-ClinicDB', 'Kvasir', 'CVC-ColonDB', 'ETIS-LaribPolypDB']
         transform_list:
@@ -68,7 +67,7 @@ Test:
         checkpoint_dir: "snapshots/UACANet-L"
 
 Eval:
-    gt_root: "data/RGB_Dataset/Test_Dataset"
+    gt_root: "data/TestDataset"
     pred_root: "snapshots/UACANet-L"
     result_path: "results"
     datasets: ['CVC-300', 'CVC-ClinicDB', 'Kvasir', 'CVC-ColonDB', 'ETIS-LaribPolypDB']
