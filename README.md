@@ -51,7 +51,6 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
 |   `-- TrainDataset
 |       |-- images
 |       `-- masks
-|-- EvaluateResults
 |-- lib
 |   |-- backbones
 |   |-- losses
