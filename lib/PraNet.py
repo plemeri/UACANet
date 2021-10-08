@@ -71,7 +71,9 @@ class PraNet(nn.Module):
             loss3 = self.loss_fn(out3, y)
             loss2 = self.loss_fn(out2, y)
             loss = loss2 + loss3 + loss4 + loss5
+            debug = [out5, out4, out3]
         else:
             loss = 0
+            debug = []
 
-        return {'pred': out2, 'loss': loss}
+        return {'pred': out2, 'loss': loss, 'debug': debug}

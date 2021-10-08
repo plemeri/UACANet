@@ -24,3 +24,19 @@ def clip_gradient(optimizer, grad_clip):
         for param in group['params']:
             if param.grad is not None:
                 param.grad.data.clamp_(-grad_clip, grad_clip)
+                
+def debug_tile(out, size=(100, 100)):
+    debugs = []
+    for debs in out['debug']:
+        debug = []
+        for deb in debs:
+            log = torch.sigmoid(deb).cpu().detach().numpy().squeeze()
+            log = (log - log.min()) / (log.max() - log.min())
+            log *= 255
+            log = log.astype(np.uint8)
+            log = cv2.cvtColor(log, cv2.COLOR_GRAY2RGB)
+            log = cv2.resize(log, size)
+            debug.append(log)
+            debugs.append(np.vstack(debug))
+
+    np.hstack(debugs)

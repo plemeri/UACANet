@@ -95,7 +95,7 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
 ```
 
 ## 3. Train & Evaluate
-  + You can train with `CUDA_VISIBLE_DEVICES=0 python run/Train.py --config configs/UACANet-L.yaml`
+  + You can train with `CUDA_VISIBLE_DEVICES=0 python run/Train.py --config configs/UACANet-L.yaml --verbose`
   + (21.10.08 added) You can also train your model with multiple GPUs. `CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node 2 --master_port=$RANDOM run/Train.py --config configs/UACANet-L.yaml --verbose`
   + You can generate prediction for test dataset with `python run/Test.py --config configs/UACANet-L.yaml`
   + You can evaluate generated prediction with `python run/Eval.py --config configs/UACANet-L.yaml`
