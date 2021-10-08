@@ -1,4 +1,4 @@
-# UACANet: Uncertainty Aware Context Attention for Polyp Segmentation
+# UACANet: Uncertainty Augmented Context Attention for Polyp Segmentation
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/uacanet-uncertainty-augmented-context/medical-image-segmentation-on-cvc-colondb)](https://paperswithcode.com/sota/medical-image-segmentation-on-cvc-colondb?p=uacanet-uncertainty-augmented-context)
 
@@ -8,7 +8,7 @@
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/uacanet-uncertainty-augmented-context/medical-image-segmentation-on-cvc-clinicdb)](https://paperswithcode.com/sota/medical-image-segmentation-on-cvc-clinicdb?p=uacanet-uncertainty-augmented-context)
 
-Official pytorch implementation of [UACANet: Uncertainty Aware Context Attention for Polyp Segmentation](https://arxiv.org/abs/2107.02368)  
+Official pytorch implementation of [UACANet: Uncertainty Augmented Context Attention for Polyp Segmentation](https://arxiv.org/abs/2107.02368)  
 To appear in the Proceedings of the 29th ACM International Conference on Multimedia (ACM MM '21)
 
 ![Teaser](./figures/figure.jpg)
