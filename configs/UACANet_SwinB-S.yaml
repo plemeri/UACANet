@@ -1,0 +1,75 @@
+Model:
+    name: "UACANet_SwinB"
+    channels: 32
+    output_stride: 32
+    pretrained: True
+
+Train:
+    Dataset:
+        type: "PolypDataset"
+        root: "data/TrainDataset"
+        transform_list:
+            resize: 
+                size: [384, 384]
+            random_scale_crop:
+                range: [0.75, 1.25]
+            random_flip:
+                lr: True
+                ud: True
+            random_rotate:
+                range: [0, 359]
+            random_image_enhance:
+                methods: ['contrast', 'sharpness', 'brightness']
+            random_dilation_erosion:
+                kernel_range: [2, 5]
+            tonumpy: NULL
+            normalize: 
+                mean: [0.485, 0.456, 0.406]
+                std: [0.229, 0.224, 0.225]
+            totensor: NULL
+    Dataloader:
+        batch_size: 8
+        shuffle: True
+        num_workers: 8
+        pin_memory: False
+    Optimizer:
+        type: "Adam"
+        lr: 1.0e-04
+        weight_decay: 0.0
+        clip: 0.5
+        mixed_precision: False
+    Scheduler:
+        type: "PolyLr"
+        epoch: 240
+        gamma: 0.9
+        minimum_lr: 1.0e-07
+        warmup_iteration: 300
+    Checkpoint:
+        checkpoint_epoch: 20
+        checkpoint_dir: "snapshots/UACANet_SwinB-S"
+    
+Test:
+    Dataset:
+        type: "PolypDataset"
+        root: "data/TestDataset"
+        testsets: ['CVC-300', 'CVC-ClinicDB', 'Kvasir', 'CVC-ColonDB', 'ETIS-LaribPolypDB']
+        transform_list:
+            resize: 
+                size: [384, 384]
+            tonumpy: NULL
+            normalize: 
+                mean: [0.485, 0.456, 0.406]
+                std: [0.229, 0.224, 0.225]
+            totensor: NULL
+    Dataloader:
+        num_workers: 8
+        pin_memory: True
+    Checkpoint:
+        checkpoint_dir: "snapshots/UACANet_SwinB-S"
+
+Eval:
+    gt_root: "data/TestDataset"
+    pred_root: "snapshots/UACANet_SwinB-S"
+    result_path: "results"
+    datasets: ['CVC-300', 'CVC-ClinicDB', 'Kvasir', 'CVC-ColonDB', 'ETIS-LaribPolypDB']
+    metrics: ['meanDic', 'meanIoU', 'wFm', 'Sm', 'meanEm', 'mae', 'maxEm', 'maxDic', 'maxIoU', 'meanSen', 'maxSen', 'meanSpe', 'maxSpe']

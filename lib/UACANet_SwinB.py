@@ -17,9 +17,9 @@ class UACANet_SwinB(nn.Module):
         super(UACANet_SwinB, self).__init__()
         self.backbone = self.backbone = SwinB(pretrained=pretrained)
 
-        self.context2 = PAA_e(512, channels)
-        self.context3 = PAA_e(1024, channels)
-        self.context4 = PAA_e(2048, channels)
+        self.context2 = PAA_e(256, channels)
+        self.context3 = PAA_e(512, channels)
+        self.context4 = PAA_e(1024, channels)
 
         self.decoder = PAA_d(channels)
 
