@@ -1,6 +1,4 @@
 import torch
-from torch.nn import modules
-import yaml
 import os
 import argparse
 import tqdm
@@ -10,58 +8,73 @@ import torch.nn.functional as F
 import numpy as np
 
 from PIL import Image
-from easydict import EasyDict as ed
+from torch.nn import modules
 
 filepath = os.path.split(__file__)[0]
 repopath = os.path.split(filepath)[0]
 sys.path.append(repopath)
 
-from lib import *
-from utils.dataloader import *
 from utils.utils import *
+from utils.dataloader import *
+from lib import *
 
 def _args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='configs/xnet.yaml')
+    parser.add_argument('--config', type=str, default='configs/UACANet-L.yaml')
+    parser.add_argument('--verbose', action='store_true', default=False)
     return parser.parse_args()
 
-def test(opt):
-    model = eval(opt.Model.name)(opt.Model)
-    model.load_state_dict(torch.load(opt.Test.pth_path))
+
+def test(opt, args):
+    model = eval(opt.Model.name)(channels=opt.Model.channels,
+                                 pretrained=opt.Model.pretrained)
+    model.load_state_dict(torch.load(os.path.join(
+        opt.Test.Checkpoint.checkpoint_dir, 'latest.pth')), strict=True)
     model.cuda()
-    model.eval()    
+    model.eval()
 
-    print('#' * 20, 'Test prep done, start testing', '#' * 20)
+    if args.verbose is True:
+        testsets = tqdm.tqdm(opt.Test.Dataset.testsets, desc='Total TestSet', total=len(
+            opt.Test.Dataset.testsets), position=0, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}')
+    else:
+        testsets = opt.Test.Dataset.testsets
 
-    for dataset in tqdm.tqdm(opt.Test.datasets, desc='Total TestSet', total=len(opt.Test.datasets), position=0, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}'):
-        data_path = os.path.join(opt.Test.gt_path, dataset)
-        save_path = os.path.join(opt.Test.out_path, dataset)
+    for testset in testsets:
+        data_path = os.path.join(opt.Test.Dataset.root, testset)
+        save_path = os.path.join(opt.Test.Checkpoint.checkpoint_dir, testset)
 
         os.makedirs(save_path, exist_ok=True)
-        image_root = os.path.join(data_path, 'images')
-        gt_root = os.path.join(data_path, 'masks')
-        test_dataset = PolypDataset(image_root, gt_root, opt.Test)
+
+        test_dataset = eval(opt.Test.Dataset.type)(root=os.path.join(
+            opt.Test.Dataset.root, testset), transform_list=opt.Test.Dataset.transform_list)
+
         test_loader = data.DataLoader(dataset=test_dataset,
                                       batch_size=1,
-                                      num_workers=opt.Test.num_workers,
-                                      pin_memory=opt.Test.pin_memory)
+                                      num_workers=opt.Test.Dataloader.num_workers,
+                                      pin_memory=opt.Test.Dataloader.pin_memory)
 
-        for i, sample in tqdm.tqdm(enumerate(test_loader), desc=dataset + ' - Test', total=len(test_loader), position=1, leave=False, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}'):
-            image = sample['image']
-            name = sample['name']
-            original_size = sample['original_size']
+        if args.verbose is True:
+            samples = tqdm.tqdm(test_loader, desc=testset + ' - Test', total=len(test_loader),
+                                position=1, leave=False, bar_format='{desc:<30}{percentage:3.0f}%|{bar:50}{r_bar}')
+        else:
+            samples = test_loader
 
-            image = image.cuda()
-            out = model(image)['pred']
-            
-            out = F.interpolate(out, original_size, mode='bilinear', align_corners=True)
-            out = out.data.sigmoid().cpu().numpy().squeeze()
-            out = (out - out.min()) / (out.max() - out.min() + 1e-8)
-            Image.fromarray(((out > 0.5) * 255).astype(np.uint8)).save(os.path.join(save_path, name[0]))
+        for sample in samples:
+            sample = to_cuda(sample)
+            out = model(sample)
+            out['pred'] = F.interpolate(
+                out['pred'], sample['shape'], mode='bilinear', align_corners=True)
 
-    print('#' * 20, 'Test done', '#' * 20)
+            out['pred'] = out['pred'].data.cpu()
+            out['pred'] = torch.sigmoid(out['pred'])
+            out['pred'] = out['pred'].numpy().squeeze()
+            out['pred'] = (out['pred'] - out['pred'].min()) / \
+                (out['pred'].max() - out['pred'].min() + 1e-8)
+            Image.fromarray(((out['pred'] > .5) * 255).astype(np.uint8)
+                            ).save(os.path.join(save_path, sample['name'][0]))
+
 
 if __name__ == "__main__":
     args = _args()
-    opt = ed(yaml.load(open(args.config), yaml.FullLoader))
-    test(opt)
+    opt = load_config(args.config)
+    test(opt, args)

@@ -17,7 +17,7 @@ from utils.utils import *
 
 def _args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='configs/PraNet_Res2Net.yaml')
+    parser.add_argument('--config', type=str, default='configs/UACANet-L.yaml')
     return parser.parse_args()
 
 def evaluate(opt, args):
