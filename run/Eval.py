@@ -1,33 +1,32 @@
 import os
 import argparse
 import tqdm
-import yaml
 import sys
 
 import numpy as np
 
 from PIL import Image
 from tabulate import tabulate
-from easydict import EasyDict as ed
 
 filepath = os.path.split(__file__)[0]
 repopath = os.path.split(filepath)[0]
 sys.path.append(repopath)
 
 from utils.eval_functions import *
+from utils.utils import *
 
 def _args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, default='configs/PraNet_Res2Net.yaml')
     return parser.parse_args()
 
-def eval(opt):
+def evaluate(opt, args):
     if os.path.isdir(opt.Eval.result_path) is False:
         os.makedirs(opt.Eval.result_path)
 
     method = os.path.split(opt.Eval.pred_path)[-1]
     Thresholds = np.linspace(1, 0, 256)
-    headers = ['meanDic', 'meanIoU', 'wFm', 'Sm', 'meanEm', 'mae', 'maxEm', 'maxDic', 'maxIoU', 'meanSen', 'maxSen', 'meanSpe', 'maxSpe']
+    headers = opt.Eval.metrics #['meanDic', 'meanIoU', 'wFm', 'Sm', 'meanEm', 'mae', 'maxEm', 'maxDic', 'maxIoU', 'meanSen', 'maxSen', 'meanSpe', 'maxSpe']
     results = []
 
     print('#' * 20, 'Start Evaluation', '#' * 20)
@@ -125,7 +124,14 @@ def eval(opt):
         meanIoU = np.mean(column_IoU)
         maxIoU = np.max(column_IoU)
 
-        result.extend([meanDic, meanIoU, wFm, Sm, meanEm, mae, maxEm, maxDic, maxIoU, meanSen, maxSen, meanSpe, maxSpe])
+        # result.extend([meanDic, meanIoU, wFm, Sm, meanEm, mae, maxEm, maxDic, maxIoU, meanSen, maxSen, meanSpe, maxSpe])
+        # results.append([dataset, *result])
+        
+        out = []
+        for metric in opt.Eval.metrics:
+            out.append(eval(metric))
+
+        result.extend(out)
         results.append([dataset, *result])
 
         csv = os.path.join(opt.Eval.result_path, 'result_' + dataset + '.csv')
@@ -142,11 +148,16 @@ def eval(opt):
 
         csv.write(out_str)
         csv.close()
-    print(tabulate(results, headers=['dataset', *headers], floatfmt=".3f"))
-    print("#"*20, "End Evaluation", "#"*20)
+    tab = tabulate(results, headers=['dataset', *headers], floatfmt=".3f")
+
+    if args.verbose is True:
+        print(tab)
+        print("#"*20, "End Evaluation", "#"*20)
+        
+    return tab
 
 if __name__ == "__main__":
     args = _args()
-    opt = ed(yaml.load(open(args.config), yaml.FullLoader))
-    eval(opt)
+    opt = load_config(args.config)
+    evaluate(opt, args)
 

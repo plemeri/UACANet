@@ -13,22 +13,29 @@ class PolypDataset(data.Dataset):
     """
     dataloader for polyp segmentation tasks
     """
-    def __init__(self, image_root, gt_root, opt):
+    def __init__(self, root, transform_list):
+        image_root, gt_root = os.path.join(root, 'images'), os.path.join(root, 'masks')
+        
         self.images = [os.path.join(image_root, f) for f in os.listdir(image_root) if f.endswith('.jpg') or f.endswith('.png')]
-        self.gts = [os.path.join(gt_root, f) for f in os.listdir(gt_root) if f.endswith('.png')]
         self.images = sorted(self.images)
+        
+        self.gts = [os.path.join(gt_root, f) for f in os.listdir(gt_root) if f.endswith('.png')]
         self.gts = sorted(self.gts)
+        
         self.filter_files()
+        
         self.size = len(self.images)
-
+        self.transform = self.get_transform(transform_list)
+    @staticmethod
+    def get_transform(transform_list):
         tfs = []
-        for key, value in zip(opt.transforms.keys(), opt.transforms.values()):
+        for key, value in zip(transform_list.keys(), transform_list.values()):
             if value is not None:
                 tf = eval(key)(**value)
             else:
                 tf = eval(key)()
             tfs.append(tf)
-        self.transform = transforms.Compose(tfs)
+        return transforms.Compose(tfs)
 
     def __getitem__(self, index):
         image = self.rgb_loader(self.images[index])

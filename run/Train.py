@@ -24,7 +24,7 @@ def _args():
     return parser.parse_args()
 
 def train(opt, args):
-    device_ids = [0]
+    device_ids = os.environ["CUDA_VISIBLE_DEVICES"].split(',')
     device_num = len(device_ids)
     model = eval(opt.Model.name)(opt.Model).cuda()
     
@@ -33,10 +33,10 @@ def train(opt, args):
 
     train_dataset = PolypDataset(image_root, gt_root, opt.Train)
     train_loader = data.DataLoader(dataset=train_dataset,
-                                  batch_size=opt.Train.batchsize,
-                                  shuffle=opt.Train.shuffle,
-                                  num_workers=opt.Train.num_workers,
-                                  pin_memory=opt.Train.pin_memory)
+                                    batch_size=opt.Train.batchsize,
+                                    shuffle=opt.Train.shuffle,
+                                    num_workers=opt.Train.num_workers,
+                                    pin_memory=opt.Train.pin_memory)
 
     params = model.parameters()
     optimizer = torch.optim.Adam(params, opt.Train.lr)
