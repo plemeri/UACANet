@@ -1,3 +1,3 @@
 from .Train import train
 from .Test import test
-from .Eval import eval
+from .Eval import evaluate
