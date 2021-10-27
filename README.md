@@ -131,13 +131,12 @@ ETIS-LaribPolypDB      0.766      0.689  0.740  0.859     0.903  0.012    0.905 
   
 ## 5. Citation
 ```
-@misc{kim2021uacanet,
-    title={UACANet: Uncertainty Augmented Context Attention for Polyp Segmentation},
-    author={Taehun Kim and Hyemin Lee and Daijin Kim},
-    year={2021},
-    eprint={2107.02368},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV}
+@inproceedings{kim2021uacanet,
+  title={UACANet: Uncertainty Augmented Context Attention for Polyp Segmentation},
+  author={Kim, Taehun and Lee, Hyemin and Kim, Daijin},
+  booktitle={Proceedings of the 29th ACM International Conference on Multimedia},
+  pages={2167--2175},
+  year={2021}
 }
 ```
   + Conference version will be added soon.
