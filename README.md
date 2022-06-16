@@ -26,7 +26,7 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
   + Install requirements with following command `pip install -r requirements.txt`
   
 ## 2. Prepare datasets
-  + Download dataset from following [URL](https://drive.google.com/file/d/17Cs2JhKOKwt4usiAYJVJMnXfyZWySn3s/view?usp=sharing)
+  + Download Train/Test datasets and Res2Net backbone checkpoint from following [URL](https://postechackr-my.sharepoint.com/:u:/g/personal/taehoon1018_postech_ac_kr/EdqOjDpjDNZCnyFUd68FmzcBu9aN-vUX3HE_H1VM_9vorQ?e=xWg4Cw)
   + Move folder `data` to the repository.
   + Folder should be ordered as follows,
 ```
@@ -101,7 +101,7 @@ We propose Uncertainty Augmented Context Attention network (UACANet) for polyp s
   + You can also use `CUDA_VISIBLE_DEVICES=0 python Expr.py --config configs/UACANet-L.yaml --verbose --debug` to train, generate prediction and evaluation in single command
   + (21.10.08 added) You can also use `python Exprs.py --config configs/UACANet-L.yaml --exprs 8 --devices 0,1 --verbose --debug` to train, generate prediction and evaluation for multiple times for single configuration in single command. Note that it works on tmux environment only, so use this on tmux console.
   
-  + (optional) Download our best result checkpoint and pre-computed maps from following [URL](https://drive.google.com/file/d/1C5ag5X_gKR1IHW6fVAHdMggu7ilU1XbC/view?usp=sharing) for UACANet-L and UACANet-S.
+  + (optional) Download our best result checkpoint and pre-computed maps from following [URL](https://postechackr-my.sharepoint.com/:u:/g/personal/taehoon1018_postech_ac_kr/EawsLUvLsG5LoOeJxYdF5g0BMcv-n6Wn40ETeDDtNyeDmg?e=WMjIqx) for UACANet-L and UACANet-S.
 
 ## 4. Experimental Results
   + UACANet-S
