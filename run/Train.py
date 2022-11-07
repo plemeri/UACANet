@@ -1,17 +1,18 @@
 import os
 import torch
-import argparse
 import tqdm
 import sys
 
 import cv2
 import torch.nn as nn
+import torch.cuda as cuda
 import torch.distributed as dist
 
 from torch.optim import Adam, SGD
 from torch.cuda.amp import GradScaler, autocast
+from torch.utils.data.distributed import DistributedSampler
 
-filepath = os.path.split(__file__)[0]
+filepath = os.path.split(os.path.abspath(__file__))[0]
 repopath = os.path.split(filepath)[0]
 sys.path.append(repopath)
 
@@ -19,27 +20,14 @@ from utils.dataloader import *
 from lib.optim import *
 from lib import *
 
-def _args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='configs/UACANet-L.yaml')
-    parser.add_argument('--local_rank', type=int, default=-1)
-    parser.add_argument('--verbose', action='store_true', default=False)
-    parser.add_argument('--debug', action='store_true', default=False)
-    return parser.parse_args()
-
-
 def train(opt, args):
-    device_ids = os.environ["CUDA_VISIBLE_DEVICES"].split(',')
-    device_num = len(device_ids)
-
     train_dataset = eval(opt.Train.Dataset.type)(
         root=opt.Train.Dataset.root, transform_list=opt.Train.Dataset.transform_list)
 
-    if device_num > 1:
+    if args.device_num > 1:
         torch.cuda.set_device(args.local_rank)
-        dist.init_process_group(backend='nccl')
-        train_sampler = torch.utils.data.distributed.DistributedSampler(
-            train_dataset, shuffle=True)
+        dist.init_process_group(backend='nccl', rank=args.local_rank, world_size=args.device_num)
+        train_sampler = DistributedSampler(train_dataset, shuffle=True)
     else:
         train_sampler = None
 
@@ -55,11 +43,10 @@ def train(opt, args):
                                  output_stride=opt.Model.output_stride,
                                  pretrained=opt.Model.pretrained)
 
-    if device_num > 1:
+    if args.device_num > 1:
         model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
         model = model.cuda()
-        model = nn.parallel.DistributedDataParallel(model, device_ids=[
-                                                    args.local_rank], output_device=args.local_rank, find_unused_parameters=True)
+        model = nn.parallel.DistributedDataParallel(model, device_ids=[args.local_rank], find_unused_parameters=True)
     else:
         model = model.cuda()
 
@@ -101,7 +88,7 @@ def train(opt, args):
         if args.local_rank <= 0 and args.verbose is True:
             step_iter = tqdm.tqdm(enumerate(train_loader, start=1), desc='Iter', total=len(
                 train_loader), position=1, leave=False, bar_format='{desc:<5.5}{percentage:3.0f}%|{bar:40}{r_bar}')
-            if device_num > 1:
+            if args.device_num > 1:
                 train_sampler.set_epoch(epoch)
         else:
             step_iter = enumerate(train_loader, start=1)
@@ -132,7 +119,7 @@ def train(opt, args):
             os.makedirs(os.path.join(
                 opt.Train.Checkpoint.checkpoint_dir, 'debug'), exist_ok=True)
             if epoch % opt.Train.Checkpoint.checkpoint_epoch == 0:
-                torch.save(model.module.state_dict() if device_num > 1 else model.state_dict(
+                torch.save(model.module.state_dict() if args.device_num > 1 else model.state_dict(
                 ), os.path.join(opt.Train.Checkpoint.checkpoint_dir, 'latest.pth'))
 
             if args.debug is True:
@@ -141,11 +128,11 @@ def train(opt, args):
                     opt.Train.Checkpoint.checkpoint_dir, 'debug', str(epoch) + '.png'), debout)
 
     if args.local_rank <= 0:
-        torch.save(model.module.state_dict() if device_num > 1 else model.state_dict(
+        torch.save(model.module.state_dict() if args.device_num > 1 else model.state_dict(
         ), os.path.join(opt.Train.Checkpoint.checkpoint_dir, 'latest.pth'))
 
 
 if __name__ == '__main__':
-    args = _args()
+    args = parse_args()
     opt = load_config(args.config)
     train(opt, args)
