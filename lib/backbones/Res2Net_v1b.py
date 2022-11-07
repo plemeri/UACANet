@@ -175,7 +175,7 @@ def res2net101_v1b(pretrained=False, **kwargs):
 def res2net50_v1b_26w_4s(pretrained=False, **kwargs):
     model = Res2Net(Bottle2neck, [3, 4, 6, 3], baseWidth=26, scale=4, **kwargs)
     if pretrained:
-        model.load_state_dict(torch.load('data/backbone_ckpt/res2net50_v1b_26w_4s-3cf99910.pth'))
+        model.load_state_dict(torch.load('data/backbone_ckpt/res2net50_v1b_26w_4s-3cf99910.pth', map_location='cpu'))
     return model
 
 
